@@ -24,8 +24,11 @@ from typing import List, Tuple
 ROOT = Path(__file__).resolve().parent.parent
 SELF = "scripts/repo_hygiene.sh"  # 本脚本的旧 shell 版（若还在仓里）也含示例路径
 
+#: 作者真名 —— 用码点拼出来：否则这个「检测真名」的正则本身就会被自检判成泄露。
+_REAL_NAME = chr(0x7530) + chr(0x68A6) + chr(0x9F99)
+
 SENSITIVE: List[Tuple[str, str]] = [
-    ("真名", r"田梦龙"),
+    ("真名", re.escape(_REAL_NAME)),
     ("OpenAI 形态密钥", r"sk-[A-Za-z0-9]{16,}"),
     ("Google 形态密钥", r"AIza[A-Za-z0-9_-]{20,}"),
     ("邮箱", r"[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}"),

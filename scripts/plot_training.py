@@ -10,6 +10,7 @@ from __future__ import annotations
 import argparse
 import csv
 import json
+import os
 from pathlib import Path
 
 import matplotlib
@@ -23,10 +24,12 @@ REPO_ROOT = Path(__file__).resolve().parent.parent
 #: 图上要画中文 → 得有中文字体；没有就**退回英文标签**（而不是画出一堆方框）。
 #: 2026-10-21 实测踩过：容器/最小化 Windows 上没有 CJK 字体时，matplotlib 会
 #: 打印 "Glyph ... missing from font(s) DejaVu Sans" 并把汉字画成豆腐块。
+# 字体路径用 %WINDIR% 拼出来（源码里不出现盘符绝对路径 —— 公开仓库不该带本机路径）
+_WIN_FONTS = Path(os.environ.get("WINDIR", "C:/Windows")) / "Fonts"
 _CJK_CANDIDATES = [
-    r"C:\Windows\Fonts\msyh.ttc",
-    r"C:\Windows\Fonts\simhei.ttf",
-    r"C:\Windows\Fonts\Deng.ttf",
+    str(_WIN_FONTS / "msyh.ttc"),
+    str(_WIN_FONTS / "simhei.ttf"),
+    str(_WIN_FONTS / "Deng.ttf"),
     "/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc",
     "/usr/share/fonts/truetype/wqy/wqy-zenhei.ttc",
     "/System/Library/Fonts/PingFang.ttc",
