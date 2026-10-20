@@ -1,0 +1,42 @@
+{
+  "n_chars": 12000023,
+  "n_chars_total": 38336340,
+  "n_words": 3617094,
+  "n_word_types": 120000,
+  "n_base_chars": 12568,
+  "n_merges": 3428,
+  "vocab_size": 16000,
+  "target_vocab": 16000,
+  "train_seconds": 15.51,
+  "train_file": "train.txt",
+  "encode_tokens": 27880241,
+  "encode_chars": 38336340,
+  "unk_tokens": 0,
+  "unk_rate": 0.0,
+  "tokens_per_char": 0.7273,
+  "roundtrip_checked_lines": 2929,
+  "roundtrip_mismatches": 0,
+  "roundtrip_lossless": true,
+  "samples": [
+    {
+      "text": "怀化铁路第一中学",
+      "tokens": "怀化铁路第一中学"
+    },
+    {
+      "text": "沿革",
+      "tokens": "沿革"
+    },
+    {
+      "text": "2011 春（／封面）",
+      "tokens": "2011 春（／封面）"
+    },
+    {
+      "text": "曾任中央警卫师师长。1955年，授予中国人民解放军少将。",
+      "tokens": "曾任中央警卫师师长。1955年，授予中国人民解放军少将。"
+    },
+    {
+      "text": "1955年9月，慕生忠任兰州军区后勤部政治委员。1955年12月，获授中国人民解放军少将军衔以及一级解放勋章、二级独立自",
+      "tokens": "1955年9月，慕生忠任兰州军区后勤部政治委员。1955年12月，获授中国人民解放军少将军衔以及一级解放勋章、二级独立自"
+    }
+  ]
+}
