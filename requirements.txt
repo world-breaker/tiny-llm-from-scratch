@@ -1,0 +1,16 @@
+# tiny-llm-from-scratch 依赖
+#
+# 说明：本项目刻意保持「少依赖」。
+#  - torch          : 唯一必需的重型依赖（用本机已装的 2.14.0+cu132，不要重装/升级）
+#  - numpy          : token 流 memmap + 基线统计
+#  - pyarrow        : 读维基语料的 parquet 分片（仅 --source wiki 需要）
+#  - matplotlib     : 画训练曲线
+#  - pytest         : 跑单测
+#
+# serve.py 只用标准库 http.server，不需要任何 Web 框架。
+
+torch==2.14.0
+numpy>=2.0
+pyarrow>=15.0
+matplotlib>=3.8
+pytest>=8.0

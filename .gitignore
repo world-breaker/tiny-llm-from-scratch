@@ -1,0 +1,34 @@
+# ---- 大文件 / 资源产物：一律不追踪（用户准则：git 只传代码不传资源）----
+data/raw/
+data/processed/
+data/cache/
+checkpoints/
+*.bin
+*.pt
+*.pth
+*.safetensors
+*.parquet
+*.arrow
+*.model
+*.npy
+*.npz
+*.pkl
+
+# ---- 缓存 / 环境产物 ----
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.venv/
+venv/
+*.egg-info/
+.ipynb_checkpoints/
+
+# ---- 日志 ----
+logs/
+*.log
+
+# ---- 系统 ----
+.DS_Store
+Thumbs.db
