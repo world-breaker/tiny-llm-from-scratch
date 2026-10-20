@@ -404,7 +404,8 @@ def main() -> int:
     else:
         root = Path(args.local_root) if args.local_root else REPO_ROOT.parent.parent
         source_info.update({
-            "root": str(root),
+            # 只记录目录名，不记录绝对路径（产物里不留本机路径）
+            "root_name": root.name,
             "note": "本机已有中文文本：同级 projects 仓库的 README/文档/注释 + 工作区根目录 HTML 文档",
             "license": "本地自有内容",
         })

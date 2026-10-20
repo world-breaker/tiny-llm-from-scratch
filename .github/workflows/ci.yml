@@ -1,0 +1,67 @@
+# tiny-llm-from-scratch · CI 门禁（通用 GitHub Actions 格式）
+#
+# 宿主说明：本仓库已镜像到 GitHub，Actions **会**执行本文件；每次 push / PR 自动跑。
+# Gitee 侧不执行 GitHub Actions（若接 Gitee Go 另配）。
+#
+# 门禁跑三件事（都不需要 GPU、不需要下载模型、不花钱）：
+#   1) 单元测试（37 条，纯 CPU、离线、秒级）
+#   2) 文档数字自检：README 里引用的每个数字必须能从 results/ 的产物里重算出来
+#   3) 仓库卫生自证：没有绝对路径 / 敏感串 / 大文件（模型权重、语料、token 流都不入库）
+
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: pytest + 数字自检 + 卫生自证 (ubuntu-latest / Python 3.12)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    env:
+      PYTHONIOENCODING: "utf-8"
+      PYTHONDONTWRITEBYTECODE: "1"
+      # 本项目不加载任何预训练权重；这里显式关掉 HF 联网，防止 CI 静默下载几百 MB
+      HF_HUB_OFFLINE: "1"
+      TRANSFORMERS_OFFLINE: "1"
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: 安装 Python 3.12（带 pip 缓存）
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: requirements.txt
+
+      # 先装 CPU-only torch：默认 index 会拉 2–3GB 的 CUDA 版，而 runner 无 GPU。
+      - name: 安装 CPU 版 torch（官方 cpu index）
+        run: python -m pip install --index-url https://download.pytorch.org/whl/cpu torch
+
+      # 上一步已满足 torch==2.14.0 → 这一步不会再把 CUDA 版装回来。
+      - name: 安装其余依赖
+        run: python -m pip install -r requirements.txt
+
+      # 37 条单测：形状 / 参数量 / 权重共享 / 因果性 / 梯度能流 / KV cache 一致性 /
+      # 往返无损 / 采样可复现 / 训练降 loss —— 全部 CPU 离线，不需要模型权重。
+      - name: 单元测试（离线、CPU）
+        run: python -m pytest tests -q -rs
+
+      # README 里的数字必须能从 results/ 的产物重算出来（防止文档漂移）
+      - name: 文档数字自检
+        run: python scripts/check_doc_numbers.py
+
+      # 仓库卫生：没有绝对路径 / 敏感串 / 入库的大文件
+      - name: 仓库卫生自证
+        run: python scripts/repo_hygiene.py

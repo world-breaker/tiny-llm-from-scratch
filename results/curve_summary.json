@@ -1,0 +1,13 @@
+{
+  "final_train_loss": 2.79949,
+  "min_train_loss": 1.510232,
+  "final_val_loss": 3.596505,
+  "best_val_loss": 3.596505,
+  "best_val_ppl": 36.471,
+  "max_tokens_per_s": 76190.0,
+  "mem_peak_gib": 1.67,
+  "steps": 7500,
+  "tokens_seen": 61440000,
+  "wall_hours": 0.2374,
+  "params": 15586176
+}

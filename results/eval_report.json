@@ -1,0 +1,42 @@
+{
+  "eval_protocol": {
+    "val_windows": 256,
+    "seq_len": 512,
+    "predicted_tokens": 131072,
+    "note": "模型与所有基线在同一批 token 位置、同样多的预测上评测",
+    "baseline_stats_source": "训练集（不是验证集，避免自评作弊）"
+  },
+  "vocab_size": 16000,
+  "uniform": {
+    "val_loss": 9.680344001221918,
+    "val_ppl": 16000.0,
+    "desc": "P(t)=1/V，完全不看数据"
+  },
+  "unigram": {
+    "val_loss": 7.274645168506371,
+    "val_ppl": 1443.2389946333703,
+    "desc": "只看当前 token 的边缘频率"
+  },
+  "bigram": {
+    "val_loss": 5.6345115765781335,
+    "val_ppl": 279.9221633753146,
+    "desc": "P(t_{i+1}|t_i)，只看上一个 token，add-alpha 平滑"
+  },
+  "model": {
+    "val_loss": 3.5964483469724655,
+    "val_ppl": 36.46848076992309,
+    "params": 15586176,
+    "step": 7500,
+    "tokens_seen": 61440000,
+    "context_window": 512
+  },
+  "comparison": {
+    "model_better_than_uniform": true,
+    "model_better_than_unigram": true,
+    "model_better_than_bigram": true,
+    "ppl_ratio_vs_bigram": 7.676,
+    "ppl_ratio_vs_uniform": 438.735,
+    "loss_gap_vs_bigram_nats": 2.0381
+  },
+  "generated_at": "2026-10-21T05:06:44"
+}

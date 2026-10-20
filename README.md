@@ -94,7 +94,7 @@ x ──→ [ RMSNorm → SwiGLU → down_proj ] ─────────┐
 
 | 项 | 值 |
 |---|---|
-| 解释器 | `C:\Users\田梦龙\AppData\Local\Programs\Python\Python312\python.exe`（Python 3.12.9） |
+| 解释器 | **Python 3.12**（本机用 `py -3.12`；下文命令里的 `$PY` 指向它） |
 | PyTorch | `2.14.0+cu132`（本机已装，**不要重装/升级**） |
 | GPU | NVIDIA GeForce RTX 5060 Laptop GPU（8GB） |
 | 其余依赖 | `numpy>=2.0`、`pyarrow>=15.0`（读 parquet）、`matplotlib>=3.8`（画曲线）、`pytest>=8.0` |
@@ -102,13 +102,13 @@ x ──→ [ RMSNorm → SwiGLU → down_proj ] ─────────┐
 装依赖（若本机已装好 torch，可跳过 `torch==2.14.0` 那一行避免动到 CUDA 环境）：
 
 ```powershell
-cd D:\programmer\LLM\projects\tiny-llm-from-scratch
-& "C:\Users\田梦龙\AppData\Local\Programs\Python\Python312\python.exe" -m pip install -r requirements.txt
+cd <仓库目录>            # clone 到哪儿都行
+py -3.12 -m pip install -r requirements.txt
 ```
 
 ### 4.2 四步命令序列
 
-以下命令在仓库根目录执行。设 `$PY = "C:\Users\田梦龙\AppData\Local\Programs\Python\Python312\python.exe"`。
+以下命令在仓库根目录执行。设 `$PY = "py"`（或你自己的 python 3.12 绝对路径）。
 
 #### ① 语料准备（下载 → 清洗切分 → 训分词器 → 编码 token 流）
 
@@ -201,7 +201,7 @@ curl.exe -X POST http://127.0.0.1:8000/generate `
 |---|---|---|
 | **实际参数量（唯一权重）** | **15,586,176**（≈15.59M） | `model.num_parameters()` / `parameter_breakdown()` |
 | 其中 Token Embedding | 6,144,000（= 16000 × 384） | 同上 |
-| 其中非 Embedding | 9,441,792 | 同上 |
+| 其中非 Embedding | 9,442,176 | 同上 |
 | 每层参数量 | 1,573,632（× 6 层） | 同上 |
 | `state_dict` 键数 | 57 | `checkpoints/best.pt` |
 | `state_dict` 逐键 `numel` 相加 | 21,730,176 —— **比实际参数量多 6,144,000** | 多出的部分正是 `lm_head.weight` 与 `tok_emb.weight` **共享的同一份权重被重复计入**（两者是同一个 Tensor 对象） |
@@ -308,7 +308,27 @@ curl.exe -X POST http://127.0.0.1:8000/generate `
 | **语料自证** | 分片 SHA256 与官方公布值比对；train/val 文本 SHA256 落盘；token 流 SHA256 落盘 | `data/prepare.py` → `data/processed/{stats,token_stats}.json` |
 | **训练可观测** | 每 25 步一行 CSV（loss / lr / grad_norm / micro_bs / tokens_seen / 吞吐 / 峰值显存）；每 500 步一行验证 CSV | `results/train_log.csv`、`results/val_log.csv` |
 | **基线对照评测** | 三条基线 + 协议元信息落盘为 JSON 与 Markdown 报告 | `eval/baseline.py` → `results/eval_report.{json,md}` |
-| **训练曲线作图** | train/val loss、困惑度、吞吐、显存四联图 | `scripts/plot_training.py`（⚠️ 当前只在本地工作区，尚未提交进 git） |
+| **训练曲线作图** | train/val loss、困惑度、吞吐、显存四联图（**有中文字体时用中文标签、没有就自动退英文**，保证任何机器上都不出豆腐块） | `scripts/plot_training.py` → `results/training_curve.png` |
+
+---
+
+### 6.4 生成样例：它学到了什么、没学到什么
+
+用 `checkpoints/best.pt`（step 7,500）采样，prompt 取百科式开头（完整 8 条见 `results/generations.txt`）：
+
+| prompt | 模型续写（截断） |
+|---|---|
+| 维基百科是 | 基督教的教会，由教会成员开创。在宗教改革时，天主教徒可以到任何更严重的教会。教会的教会 |
+| 中国位于亚洲东部，是 | 大雅且尼半岛最主要的岛屿之一。它是世界上最大的珊瑚礁和周围的珊瑚礁。……参考文献 外部链接 The Talbanetar |
+| 人工智能是指 | 有一些人员们的人员或其他人员（或以上人员）。自此，一些人员的人员都在某一个前提下来了…… |
+| 足球是一项 | 比赛在2012年8月26日举行的第一轮决赛。参赛球队参赛球队参赛球队参赛球队参赛球队参赛球队参赛球队…… |
+
+**怎么读这些样例（这是本节最重要的一段）**：
+
+- **语法与文体是像的**：中文语序、标点、百科腔（「……主要由……组成」「参考文献 外部链接」这种维基标记都学到了）、连日期格式都对得上；
+- **事实是错的**：它把「维基百科」续写成「基督教的教会」，把「中国位于亚洲东部」续写成某座岛国的珊瑚礁，实体之间互相替换（样例 3 的「人员们的人员」是「人们」的分布错位）；
+- 所以这 **15.59M 参数 / 7,500 步**的模型学到的是**语言结构与长程语法**，**没有学到知识** —— 这与它 val PPL 36.47（仍远高于真实语料分布）的结论一致；
+- **它不是「会写作的模型」**：本项目的目标是「把全流程跑通」，不是「训出可用模型」。要达到可用的中文生成能力，主流开源模型在 **7B 级**，参数量与本项目差约 **450 倍**（15.59M → 7B）。
 
 ---
 
@@ -352,7 +372,7 @@ tiny-llm-from-scratch/
 ├── eval/
 │   └── baseline.py             # 模型 vs 均匀 / 一元 / bigram 基线
 ├── scripts/
-│   └── plot_training.py        # 训练曲线作图（⚠️ 尚未提交进 git）
+│   └── plot_training.py        # 训练曲线作图（自动探测中文字体，缺字体时用英文标签）
 ├── tests/                      # pytest：37 条
 │   ├── test_model.py
 │   ├── test_training.py
@@ -390,8 +410,8 @@ tiny-llm-from-scratch/
 ## 附：一句话复现全流程
 
 ```powershell
-cd D:\programmer\LLM\projects\tiny-llm-from-scratch
-$PY = "C:\Users\田梦龙\AppData\Local\Programs\Python\Python312\python.exe"
+cd <仓库目录>
+$PY = "py"
 & $PY data/prepare.py --source wiki --max-chars 40000000          # ① 语料
 & $PY tokenizer/train_bpe.py --vocab-size 16000
 & $PY data/prepare.py --tokenize

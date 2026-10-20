@@ -1,0 +1,52 @@
+{
+  "ckpt": "best.pt",
+  "step": 7500,
+  "tokens_seen": 61440000,
+  "params": 15586176,
+  "sampling": {
+    "temperature": 0.8,
+    "top_k": 50,
+    "top_p": 0.95,
+    "seed": 1234,
+    "max_new_tokens": 50
+  },
+  "decode_seconds": 1.26,
+  "samples": [
+    {
+      "prompt": "维基百科是",
+      "completion": "基督教的教会，由教会成员开创。在宗教改革时，天主教徒可以到任何更严重的教会。这个教会也需要求圣经。教会的教会",
+      "prompt_tokens": 5,
+      "completion_tokens": 50
+    },
+    {
+      "prompt": "中国位于亚洲东部，是",
+      "completion": "大雅且尼半岛最主要的岛屿之一。它是世界上最大的珊瑚礁和周围的珊瑚礁。该物种可分为两个组成：参考文献外部链接The Talbanetar",
+      "prompt_tokens": 6,
+      "completion_tokens": 50
+    },
+    {
+      "prompt": "人工智能是指",
+      "completion": "有一些人员们的人员或其他人员（或以上人员）。自此，一些人员的人员都在某一个前提下来了，这人的人员没有任何",
+      "prompt_tokens": 6,
+      "completion_tokens": 50
+    },
+    {
+      "prompt": "宇宙是",
+      "completion": "由一个自己的小孩在她的地位。他一直在一个新的老师的老师。在那时被老师的教师带走了时候，这两个老师在这",
+      "prompt_tokens": 2,
+      "completion_tokens": 50
+    },
+    {
+      "prompt": "足球是一项",
+      "completion": "比赛在2012年8月26日举行的第一轮决赛。参赛球队参赛球队参赛球队参赛球队参赛球队参赛球队参赛球队参赛球队参",
+      "prompt_tokens": 3,
+      "completion_tokens": 50
+    },
+    {
+      "prompt": "音乐是一种",
+      "completion": "非常高的关系，由于其缺乏偏微心理的缺乏，所以仍不受到更多的关系。但这个信息可能对某些信息都是不知道这种",
+      "prompt_tokens": 3,
+      "completion_tokens": 50
+    }
+  ]
+}
