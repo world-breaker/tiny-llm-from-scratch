@@ -273,6 +273,23 @@ curl.exe -X POST http://127.0.0.1:8000/generate `
 
 ---
 
+
+### 5.6 CI 门禁（两套平台，都真跑）
+
+| 平台 | 描述文件 | 触发 | 跑什么 |
+|---|---|---|---|
+| **GitHub Actions** | `.github/workflows/ci.yml` | 每次 push / PR | `pytest tests -q`（纯 CPU、离线、秒级） |
+| **Gitee Go** | `.workflow/MasterPipeline.yml` | push 到 master | **同一批命令**（`pytest tests -q`），只是 YAML 方言不同 |
+
+- **离线可跑**：`HF_HUB_OFFLINE=1` + `TRANSFORMERS_OFFLINE=1` —— 本项目不加载任何预训练权重，
+  这两条让「试图联网拉模型」**直接失败**，而不是把绿灯建立在一个没人审过的网络请求上；
+- **Gitee Go 的三个坑**（都写进了 `.workflow/MasterPipeline.yml` 的注释）：YAML **键名大小写敏感**
+  （写错不会在文件里报错，而是流水线直接不生效）、**仓库必须先在网页上开通 Gitee Go**（否则推了也不注册）、
+  pip 在国内慢所以走清华镜像；
+- Gitee Go 的构建记录在仓库页「流水线」里 —— **需要登录才能看到**，所以本 README 不挂 Gitee 徽章
+  （匿名访问会被登录墙挡成 404，挂一个坏徽章比不挂更糟）。
+
+
 ## 6. 评测与基线对比
 
 ### 6.1 评测协议（诚实性约束）
